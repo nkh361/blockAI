@@ -1,14 +1,15 @@
 package edu.depaul.core;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
 import java.util.UUID;
 
 public class ContainerManager {
-    private static final String CONTAINER_BASE_PATH = "/var/lib/ai-containers/";
-    private Map<String, Process> runningContainers;
-    private FileSystemHelper fileSystemHelper = new FileSystemHelper();
+    private static final String CONTAINER_PATH = System.getProperty("user.home") + "/ai-containers/";
+    private Map<String, Process> runningContainers = new HashMap<>();
+    private FileSystemHelper fileSystemHelper;
 
     public ContainerManager(FileSystemHelper fileSystemHelper) {
         this.fileSystemHelper = fileSystemHelper;
@@ -23,7 +24,7 @@ public class ContainerManager {
      */
     public String createContainer() {
         String containerID = UUID.randomUUID().toString();
-        String containerPath = CONTAINER_BASE_PATH + containerID;
+        String containerPath = CONTAINER_PATH + containerID;
 
         if (!fileSystemHelper.createDirectory(containerPath)) {
             throw new IllegalStateException("Failed to create container directory: " + containerPath);
@@ -39,7 +40,7 @@ public class ContainerManager {
      * @param command           the command to run inside the container
      */
     public void startContainer(String containerID, String command) {
-        String containerPath = CONTAINER_BASE_PATH + containerID;
+        String containerPath = CONTAINER_PATH + containerID;
         File containerDir = new File(containerPath);
 
         if (!containerDir.exists()) {
